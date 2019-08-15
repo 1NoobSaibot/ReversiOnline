@@ -19,6 +19,7 @@ class AuthController {
         });
         await user.save();
 
+        console.log(`Register Successfully! User ${firstname} ${lastname} was added.`);
         return view.render('auth.register', {success:true});
     }
 }

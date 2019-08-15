@@ -21,6 +21,6 @@ Route.on('/').render('welcome')
 Route.group(()=>{
     Route.get('login', 'AuthController.loginShow');
     Route.get('register', 'AuthController.registerShow');
-    Route.post('register', 'AuthController.register');
+    Route.post('register', 'AuthController.register').validator('UserCreate');
 }).prefix('auth');
 
