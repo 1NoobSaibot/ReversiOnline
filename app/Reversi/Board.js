@@ -37,6 +37,18 @@ class Board{
             }
         }
     }
+
+    getTransposedMatrix(){
+        let m = new Array(8);
+        for (let i = 0; i < 8; i++)
+            m[i] = new Array(8);
+        
+        for(let x = 0; x < 8; x++)
+            for(let y = 0; y < 8; y++)
+                m[x][y] = this.m[y][x];
+
+        return m;
+    }
 }
 
 module.exports = Board;
