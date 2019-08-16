@@ -40,6 +40,7 @@
         for (let i = 0; i < 8; i++)
           for (let j = 0; j < 8; j++)
             table.children[0].children[i].children[j].textContent = board.m[i][j] == '0' ? ' ' : board.m[i][j];
+        if (board.gameOver) console.log('GameOver');
       }catch(e){
         console.error(e.message);
       }

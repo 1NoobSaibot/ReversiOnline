@@ -14,9 +14,7 @@ class GuestController{
 
         let edgeArgs = {
             state: 'game', 
-            board: {
-                m: game.board.getTransposedMatrix()
-            }, 
+            board: game.board.toEdgeArg(), 
             url: Env.get('APP_URL') 
         };
         return view.render('game', edgeArgs);
@@ -28,11 +26,11 @@ class GuestController{
         game.move(x, y);
         session.put('game', JSON.stringify(game));
 
-        const board = {
-            m: game.board.getTransposedMatrix()
-        }
-
-        return view.render('game', {state: 'game', board, url: Env.get('APP_URL') });
+        return view.render('game', {
+            state: 'game', 
+            board: game.board.toEdgeArg(), 
+            url: Env.get('APP_URL') 
+        });
     }
 }
 

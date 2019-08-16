@@ -10,25 +10,17 @@ const Game = use('App/Reversi/Game');
 class GameController{
     board({session, response}){
         const game = new Game(JSON.parse(session.get('game')));
-
-        let board = {
-            m: game.board.getTransposedMatrix()
-        }
-
-        response.json(board);
+        response.json(game.board.toEdgeArg());
     }
 
     move({session, request, response}){
         const {x, y} = request.all().params;
-        
+
         try{
             const game = new Game(JSON.parse(session.get('game')));
-            const res = game.move(x, y);
-            if (res) { 
-                session.put('game', JSON.stringify(game));
-                return response.send('accepted');
-            }
-            return response.send('rejected');
+            if (!game || !game.move(x, y)) return response.send('rejected');
+            session.put('game', JSON.stringify(game));
+            return response.send('accepted');
         }catch(e){
             console.log(e.message);
         }

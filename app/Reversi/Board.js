@@ -25,15 +25,15 @@ class Board{
     move(x, y)
     {
         x = +x; y = +y;
-        if (this.gameOver) throw Error('GameOver! You cant move it!');
+        if (this.gameOver || !set(this, x, y)) return false;
 
-        if (!set(this, x, y)) return false;
-        
         this.swapPlayer();
         if (!existMove(this))
         {
             this.swapPlayer();
-            if (!existMove(this)){ this.currentPlayer = Cell.Empty; }
+            if (!existMove(this)){ 
+                this.gameOver = true; 
+            }
         }
         return true;
     }
@@ -48,6 +48,15 @@ class Board{
                 m[x][y] = this.m[y][x];
 
         return m;
+    }
+
+    toEdgeArg(){
+        let arg = {
+            m: this.getTransposedMatrix(),
+            gameOver: this.gameOver,
+            currentPlayer: this.currentPlayer
+        }
+        return arg;
     }
 }
 
@@ -81,6 +90,7 @@ function invertLine(board, x, y, a, b) {
 }
 
 function set(board, x, y){
+    if (!_let(board, x, y)) return false;
     board.m[x][y] = board.currentPlayer;
 
     let res = false;
@@ -105,7 +115,7 @@ function existMove(board)
 
 function _let(board, x, y)
 {
-    if (board.m[x][y] != Cell.Empty) return false;
+    if (board.m[x][y] !== Cell.Empty) return false;
     for (let a = -1; a < 2; a++)
         for (let b = -1; b < 2; b++)
             if (validLine(board, x, y, a, b)) return true;
