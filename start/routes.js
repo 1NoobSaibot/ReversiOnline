@@ -31,3 +31,8 @@ Route.group(()=>{
     Route.post('move', 'GuestController.move');
 }).prefix('guest');
 
+Route.group(()=>{
+    Route.post('simple/board', 'GameController.board');
+    Route.post('simple/move', 'GameController.move');
+}).prefix('game');
+

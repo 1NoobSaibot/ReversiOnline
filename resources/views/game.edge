@@ -2,26 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hello Adonis</title>
+  <title>ReversiOnline</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   {{ style('style') }}
 </head>
 <body>
   @if(state == "game")
-  <table>
+  <table id="board">
     @each(row in board.m)
       <tr>
         @each(cell in row)
-          <td>{{cell ? cell : "_"}}</td>
+          <td onclick="move(this)">{{cell ? cell : "_"}}</td>
         @endeach
       </tr>
     @endeach
   </table>
-  <form method="POST" action="{{url}}/guest/move">
-    {{ csrfField() }}
-    <input type="number" name="x">
-    <input type="number" name="y">
-    <input type="submit" value="Move">
-  </form>
+  <script type="text/JavaScript">
+    async function move(cell){
+      let x = cell.cellIndex;
+      let y = cell.parentNode.rowIndex;
+      
+      try{
+        const res = (await axios.post("{{ url }}/game/simple/move", {params:{x, y}})).data;
+        if (res == 'accepted')
+          await updateTable();
+      }
+      catch(e){
+        console.log(e.message);
+      }
+    }
+
+    async function updateTable(){
+      try{
+        let board = (await axios.post("{{ url }}/game/simple/board")).data;
+        
+        const table = document.getElementById('board');
+        for (let i = 0; i < 8; i++)
+          for (let j = 0; j < 8; j++)
+            table.children[0].children[i].children[j].textContent = board.m[i][j] == '0' ? ' ' : board.m[i][j];
+      }catch(e){
+        console.error(e.message);
+      }
+    }
+  </script>
   @endif
 </body>
 </html>

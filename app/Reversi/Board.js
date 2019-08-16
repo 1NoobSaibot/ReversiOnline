@@ -27,15 +27,15 @@ class Board{
         x = +x; y = +y;
         if (this.gameOver) throw Error('GameOver! You cant move it!');
 
-        if (set(this, x, y))
+        if (!set(this, x, y)) return false;
+        
+        this.swapPlayer();
+        if (!existMove(this))
         {
             this.swapPlayer();
-            if (!existMove(this))
-            {
-                this.swapPlayer();
-                if (!existMove(this)){ this.currentPlayer = Cell.Empty; }
-            }
+            if (!existMove(this)){ this.currentPlayer = Cell.Empty; }
         }
+        return true;
     }
 
     getTransposedMatrix(){
