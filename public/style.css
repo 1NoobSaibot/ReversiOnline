@@ -90,3 +90,21 @@ p {
     transform: none;
   }
 }
+
+table {
+  background-color: darkgreen;
+  font-family: 'Courier New', Courier, monospace;
+  border-collapse: collapse;
+}
+
+tr {
+  height: 30px;
+  text-align: center;
+  border: 1px solid black;
+}
+
+td {
+  width: 30px;
+  text-align: center;
+  border: 1px solid black;
+}

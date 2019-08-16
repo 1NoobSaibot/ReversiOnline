@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hello Adonis</title>
+  {{ style('style') }}
+</head>
+<body>
+  @if(state == "game")
+  <table>
+    @each(row in board.m)
+      <tr>
+        @each(cell in row)
+          <td>{{cell ? cell : "_"}}</td>
+        @endeach
+      </tr>
+    @endeach
+  </table>
+  <form method="POST" action="{{url}}/guest/move">
+    {{ csrfField() }}
+    <input type="number" name="x">
+    <input type="number" name="y">
+    <input type="submit" value="Move">
+  </form>
+  @endif
+</body>
+</html>

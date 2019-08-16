@@ -20,7 +20,14 @@ Route.on('/').render('welcome')
 
 Route.group(()=>{
     Route.get('login', 'AuthController.loginShow');
+    Route.post('login', 'AuthController.login');
     Route.get('register', 'AuthController.registerShow');
     Route.post('register', 'AuthController.register').validator('UserCreate');
+    Route.post('logout', 'AuthController.logout');
 }).prefix('auth');
+
+Route.group(()=>{
+    Route.get('play', 'GuestController.play');
+    Route.post('move', 'GuestController.move');
+}).prefix('guest');
 
