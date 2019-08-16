@@ -34,5 +34,6 @@ Route.group(()=>{
 Route.group(()=>{
     Route.post('simple/board', 'GameController.board');
     Route.post('simple/move', 'GameController.move');
+    Route.post('simple/start', 'GameController.start');
 }).prefix('game');
 

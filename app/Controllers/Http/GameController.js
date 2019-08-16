@@ -25,6 +25,12 @@ class GameController{
             console.log(e.message);
         }
     }
+
+    start({session, response}){
+        let game = new Game();
+        session.put('game', JSON.stringify(game));
+        response.send('GameIsReady');
+    }
 }
 
 module.exports = GameController;

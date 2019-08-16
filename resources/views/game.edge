@@ -23,24 +23,30 @@
       let y = cell.parentNode.rowIndex;
       
       try{
-        const res = (await axios.post("{{ url }}/game/simple/move", {params:{x, y}})).data;
-        if (res == 'accepted')
-          await updateTable();
+        let res = (await axios.post("{{ url }}/game/simple/move", {params:{x, y}})).data;
+        if (res == 'accepted') {
+          let board = (await axios.post("{{ url }}/game/simple/board")).data;
+          await updateTable(board);
+          if (board.gameOver) {
+            console.log('GameOver');
+            res = (await axios.post("{{url}}/game/simple/start")).data;
+            if (res == 'GameIsReady') setTimeout(updateTable, 3000);
+          }
+        }
       }
       catch(e){
         console.log(e.message);
       }
     }
 
-    async function updateTable(){
+    async function updateTable(board){
       try{
-        let board = (await axios.post("{{ url }}/game/simple/board")).data;
-        
+        if (!board) board = (await axios.post("{{ url }}/game/simple/board")).data;
+
         const table = document.getElementById('board');
         for (let i = 0; i < 8; i++)
           for (let j = 0; j < 8; j++)
             table.children[0].children[i].children[j].textContent = board.m[i][j] == '0' ? ' ' : board.m[i][j];
-        if (board.gameOver) console.log('GameOver');
       }catch(e){
         console.error(e.message);
       }
