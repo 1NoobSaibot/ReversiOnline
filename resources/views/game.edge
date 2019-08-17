@@ -6,18 +6,34 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   {{ style('style') }}
 </head>
-<body>
-  @if(state == "game")
+<body onload="startGame()">
   <table id="board">
-    @each(row in board.m)
+    @each(row in m)
       <tr>
         @each(cell in row)
-          <td onclick="move(this)">{{cell ? cell : "_"}}</td>
+          <td onclick="move(this)">{{cell ? cell : " "}}</td>
         @endeach
       </tr>
     @endeach
   </table>
   <script type="text/JavaScript">
+    async function startGame(){
+      let res = (await axios.post("{{url}}/game/simple/start")).data;
+      if (res != 'GameIsReady') throw new Error('ERROR! Game is not ready');
+      let game = (await axios.post("{{ url }}/game/simple/game")).data;
+      await updateTable(game.board);
+      if (game.cpuSide == game.board.currentPlayer) await cpuMove();
+    }
+
+    async function cpuMove(){
+      let game;
+      do{
+        let res = (await axios.post("{{url}}/game/simple/cpumove")).data;
+        if (res == 'accepted') await updateTable();
+        game = (await axios.post("{{ url }}/game/simple/game")).data;
+      }while(game.cpuSide == game.board.currentPlayer);
+    }
+
     async function move(cell){
       let x = cell.cellIndex;
       let y = cell.parentNode.rowIndex;
@@ -25,13 +41,15 @@
       try{
         let res = (await axios.post("{{ url }}/game/simple/move", {params:{x, y}})).data;
         if (res == 'accepted') {
-          let board = (await axios.post("{{ url }}/game/simple/board")).data;
-          await updateTable(board);
-          if (board.gameOver) {
+          let game = (await axios.post("{{ url }}/game/simple/game")).data;
+          await updateTable(game.board);
+          if (game.board.gameOver) {
             console.log('GameOver');
             res = (await axios.post("{{url}}/game/simple/start")).data;
             if (res == 'GameIsReady') setTimeout(updateTable, 3000);
           }
+          else if (game.cpuSide == game.board.currentPlayer)
+            await cpuMove();
         }
       }
       catch(e){
@@ -52,6 +70,5 @@
       }
     }
   </script>
-  @endif
 </body>
 </html>

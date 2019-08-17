@@ -28,12 +28,13 @@ Route.group(()=>{
 
 Route.group(()=>{
     Route.get('play', 'GuestController.play');
-    Route.post('move', 'GuestController.move');
 }).prefix('guest');
 
 Route.group(()=>{
     Route.post('simple/board', 'GameController.board');
     Route.post('simple/move', 'GameController.move');
     Route.post('simple/start', 'GameController.start');
+    Route.post('simple/cpumove', 'GameController.cpuMove');
+    Route.post('simple/game', 'GameController.game');
 }).prefix('game');
 
