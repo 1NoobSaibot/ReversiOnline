@@ -3,6 +3,8 @@
 const Cell = { Empty: 0, White: 1, Black: 2 }
 
 class Board{
+    static Cell = Cell;
+
     constructor(json){
         if (json){
             this.m = json.m;
@@ -57,6 +59,18 @@ class Board{
             currentPlayer: this.currentPlayer
         }
         return arg;
+    }
+
+    getPossibleMoves(){
+        let moves = [];
+        for (let x = 0; x < 8; x++){
+            for (let y = 0; y < 8; y++){
+                if (_let(this, x, y)) {
+                    moves.push({x, y});
+                };
+            }
+        }
+        return moves;
     }
 }
 

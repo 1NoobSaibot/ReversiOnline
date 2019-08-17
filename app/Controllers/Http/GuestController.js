@@ -8,29 +8,15 @@ const Game = use('App/Reversi/Game');
 const Env = use('Env');
 
 class GuestController{
-    play({view, session}){
-        let game = new Game();
-        session.put('game', JSON.stringify(game));
-
-        let edgeArgs = {
-            state: 'game', 
-            board: game.board.toEdgeArg(), 
-            url: Env.get('APP_URL') 
-        };
-        return view.render('game', edgeArgs);
-    }
-
-    move({session, view, request}){
-        const {x, y} = request.all();
-        const game = new Game(JSON.parse(session.get('game')));
-        game.move(x, y);
-        session.put('game', JSON.stringify(game));
-
-        return view.render('game', {
-            state: 'game', 
-            board: game.board.toEdgeArg(), 
-            url: Env.get('APP_URL') 
-        });
+    play({view}){
+        let m = new Array(8);
+        for (let i = 0; i < 8; i++){
+            m[i] = new Array(8);
+            for (let j = 0; j < 8; j++)
+                m[i][j] = 0;
+        }
+        
+        return view.render('game', { url: Env.get('APP_URL'), m});
     }
 }
 
