@@ -1,10 +1,15 @@
 'use strict'
 
+/** Cell Enum */
 const Cell = { Empty: 0, White: 1, Black: 2 }
 
 class Board{
     static Cell = Cell;
 
+    /**
+     * Restores a Board from JSON-object or creates a new Board.
+     * @param {object} json 
+     */
     constructor(json){
         if (json){
             this.m = json.m;
@@ -18,12 +23,22 @@ class Board{
         }
     }
     
+    /**
+     * Changes the player.
+     */
     swapPlayer(){
         if (this.currentPlayer == Cell.White) this.currentPlayer = Cell.Black;
         else if (this.currentPlayer == Cell.Black) this.currentPlayer = Cell.White;
         else throw Error('');
     }
 
+    /**
+     * Make a move, if possible in x, Y coordinates. 
+     * Returns an object with a description of the move or false
+     * @param {number} x 
+     * @param {number} y 
+     * @returns {object|false} {x, y, player, m} | false
+     */
     move(x, y)
     {
         x = +x; y = +y;
@@ -44,6 +59,10 @@ class Board{
         return res;
     }
 
+    /**
+     * Creates a Clone of the Board Matrix and return it
+     * @returns {number[][]} White|Black Matrix 
+     */
     getMatrix(){
         let m = new Array(8);
         for (let i = 0; i < 8; i++)
@@ -56,6 +75,10 @@ class Board{
         return m;
     }
 
+    /**
+     * Creates a transposed clone of the field matrix and returns it.
+     * @returns {number[][]} White|Black Matrix
+     */
     getTransposedMatrix(){
         let m = new Array(8);
         for (let i = 0; i < 8; i++)
@@ -68,6 +91,10 @@ class Board{
         return m;
     }
 
+    /**
+     * Collects data and gives it to the client side in the required form. Outdated
+     * @returns {object} board data for a client
+     */
     toEdgeArg(){
         let arg = {
             m: this.getTransposedMatrix(),
@@ -77,6 +104,10 @@ class Board{
         return arg;
     }
 
+    /**
+     * Returns all possible moves for the current player as an array of coordinate pairs
+     * @return {object[]} Array of {x, y}
+     */
     getPossibleMoves(){
         let moves = [];
         for (let x = 0; x < 8; x++){
@@ -88,17 +119,57 @@ class Board{
         }
         return moves;
     }
+
+    /**
+     * 
+     * Returns a FriendsFoes Matrix.
+     * Empty cells remain empty.
+     * @returns {number[][]} Friend|Foe Matrix
+     */
+    getFriendsFoes(){
+        return Board.toFriendsFoes(this.m, this.currentPlayer);
+    }
+
+    /**
+     * Converts chips on the field, calling them their own (1) and strangers (2).
+     * @param {number[][]} im White|Black Matrix
+     * @param {number} player White|Black
+     * @returns {number[][]} Friend|Foe Matrix
+     */
+    static toFriendsFoes(im, player){
+        let m = new Array(8);
+        for (let x = 0; x < 8; x++){
+            m[x] = new Array(8);
+            for(let y = 0; y < 8; y++)
+                m[x][y] = im[x][y] == 0 ? 0 : im[x][y] == player ? 1 : 2;
+        }
+
+        return m;
+    }
 }
 
 module.exports = Board;
 
-
+/**
+ * Inverts a cell value and returns it
+ * @param {number} cell Empty|White|Black value 
+ * @returns {number} (throw Error)|Black|White value 
+ */
 function invert(cell){
     if (cell == Cell.White) return Cell.Black;
     if (cell == Cell.Black) return Cell.White;
     else throw new Error('WTF');
 }
 
+/**
+ * Checks the possibility of a chip flip.
+ * @param {Board} board 
+ * @param {number} x start
+ * @param {number} y start
+ * @param {number} a horisontal direction
+ * @param {number} b vertical direction
+ * @returns {boolean} return true if this line could be fliped.
+ */
 function validLine(board, x, y, a, b){
     let ok = false;
     
@@ -110,6 +181,14 @@ function validLine(board, x, y, a, b){
     }
 }
 
+/**
+ * Flips the line
+ * @param {Board} board 
+ * @param {number} x start
+ * @param {number} y start
+ * @param {number} a horisontal direction
+ * @param {number} b vertical direction
+ */
 function invertLine(board, x, y, a, b) {
     for (   
             let i = x + a, j = y + b; 
@@ -119,6 +198,14 @@ function invertLine(board, x, y, a, b) {
         board.m[i][j] = invert(board.m[i][j]);
 }
 
+/**
+ * Checks the conditions and executes the move, if they are met. 
+ * Returns true if successful.
+ * @param {Board} board 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns {boolean} success
+ */
 function set(board, x, y){
     if (!_let(board, x, y)) return false;
     board.m[x][y] = board.currentPlayer;
@@ -135,6 +222,12 @@ function set(board, x, y){
     return res;
 }
 
+/**
+ * Checks the existence of a move for the current player. 
+ * Returns true if there is at least one.
+ * @param {Board} board 
+ * @returns {boolean} move exists
+ */
 function existMove(board)
 {
     for (let x = 0; x < 8; x++)
@@ -143,6 +236,15 @@ function existMove(board)
     return false;
 }
 
+/**
+ * Checks the ability to make a move at the given coordinates for the current player. 
+ * Checks lines in all eight directions. 
+ * Returns true if a move is possible.
+ * @param {Board} board 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns {boolean} Move is possible
+ */
 function _let(board, x, y)
 {
     if (board.m[x][y] !== Cell.Empty) return false;
@@ -152,6 +254,10 @@ function _let(board, x, y)
     return false;
 }
 
+/**
+ * Returns and initializes a new game matrix.
+ * @returns {number[][]} White|Black Matrix
+ */
 function buildArray(){
     let m = new Array(8);
     for (let i = 0; i < m.length; i++)
