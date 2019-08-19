@@ -9,7 +9,7 @@ const Game = use('App/Reversi/Game');
 
 class GameController{
     board({session, response}){
-        const game = new Game(JSON.parse(session.get('game')));
+        const game = getGame(session);
         response.json(game.board.toEdgeArg());
     }
 
@@ -17,9 +17,9 @@ class GameController{
         const {x, y} = request.all().params;
 
         try{
-            const game = new Game(JSON.parse(session.get('game')));
+            const game = getGame(session);
             if (!game || game.isCpuMove() || !game.move(x, y)) return response.send('rejected');
-            session.put('game', JSON.stringify(game));
+            putGame(session, game);
             return response.send('accepted');
         }catch(e){
             console.log(e.message);
@@ -28,18 +28,14 @@ class GameController{
 
     cpuMove({session, response}){
         try{
-            const game = new Game(JSON.parse(session.get('game')));
-            console.dir(game);
+            const game = getGame(session);
             if (!game || !game.isCpuMove() || game.isOver()) return response.send('rejected');
-            console.log(1);
             const moves = game.board.getPossibleMoves();
-            console.dir(moves);
             let i = Math.round(Math.random() * moves.length);
             i = i == moves.length ? 0: i;
             const v = moves[i];
-            console.dir(v);
             if (!game.move(v.x, v.y)) throw new Error('Не могу сделать ход!');
-            session.put('game', JSON.stringify(game));
+            putGame(session, game);
             return response.send('accepted');
         }catch(e){
             console.log(e.message);
@@ -47,15 +43,33 @@ class GameController{
     }
 
     start({session, response}){
-        let game = new Game();
-        session.put('game', JSON.stringify(game));
-        response.send('GameIsReady');
+        try {
+            let game, json = session.get('game');
+            if (json){
+                game = new Game(JSON.parse(json));
+                game.printStack();
+            }
+            
+            game = new Game();
+            putGame(session, game);
+            response.send('GameIsReady');
+        }
+        catch (e){ console.log(e.message); }
     }
 
     game({session, response}){
-        const game = new Game(JSON.parse(session.get('game')));
+        const game = getGame(session);
         response.json(game.toClient());
     }
 }
 
 module.exports = GameController;
+
+
+function getGame(session){
+    return new Game(JSON.parse(session.get('game')));
+}
+
+function putGame(session, game){
+    session.put('game', JSON.stringify(game));
+}

@@ -27,6 +27,10 @@ class Board{
     move(x, y)
     {
         x = +x; y = +y;
+        let res = {
+            x, y, player: this.currentPlayer,
+            m: this.getMatrix()
+        }
         if (this.gameOver || !set(this, x, y)) return false;
 
         this.swapPlayer();
@@ -37,7 +41,19 @@ class Board{
                 this.gameOver = true; 
             }
         }
-        return true;
+        return res;
+    }
+
+    getMatrix(){
+        let m = new Array(8);
+        for (let i = 0; i < 8; i++)
+            m[i] = new Array(8);
+        
+        for(let x = 0; x < 8; x++)
+            for(let y = 0; y < 8; y++)
+                m[x][y] = this.m[x][y];
+
+        return m;
     }
 
     getTransposedMatrix(){
