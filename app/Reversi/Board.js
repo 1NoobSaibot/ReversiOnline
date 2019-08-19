@@ -2,6 +2,8 @@
 
 /** Cell Enum */
 const Cell = { Empty: 0, White: 1, Black: 2 }
+/** @type {import('App/Reversi/UBigInt')} */
+const UBigInt = use('App/Reversi/UBigInt');
 
 class Board{
     static Cell = Cell;
@@ -44,7 +46,8 @@ class Board{
         x = +x; y = +y;
         let res = {
             x, y, player: this.currentPlayer,
-            m: this.getMatrix()
+            m: this.getMatrix(),
+            dt: this.getFriendsFoesDt().toString()
         }
         if (this.gameOver || !set(this, x, y)) return false;
 
@@ -145,6 +148,14 @@ class Board{
         }
 
         return m;
+    }
+
+    /**
+     * @returns {}
+     */
+    getFriendsFoesDt(){
+        let m = this.getFriendsFoes();
+        return getDt(m);
     }
 }
 
@@ -273,4 +284,22 @@ function buildArray(){
     m[4][4] = Cell.White;
 
     return m;
+}
+
+/**
+ * 
+ * @param {number[][]} m
+ * @returns {UBigInt} 
+ */
+function getDt(m){
+    let sum = new UBigInt();
+
+    for (let y = 0; y < 8; y++){
+        for (let x = 0; x < 8; x++){
+            sum = UBigInt.mul(sum, 3);
+            sum = UBigInt.add(sum, m[x][y]);
+        }
+    }
+
+    return sum;
 }

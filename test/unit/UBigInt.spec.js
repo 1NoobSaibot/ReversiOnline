@@ -26,10 +26,6 @@ test('UBigInt.mul(a, b)', async ({ assert }) => {
     for (let j = 9; j >= 0; j--){
       let a = UBigInt.toUBigInt(i);
       let c = UBigInt.mul(a, j);
-      if (i == 0 && j == 0) {
-        console.dir(a);  
-        console.dir(c);
-      }
       assert.equal((i * j).toString(), c.toString());
     }
   }

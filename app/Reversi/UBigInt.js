@@ -10,11 +10,13 @@ class UBigInt{
 
     /**
      * 
-     * @param {UBigInt} a unsigned big integer
-     * @param {UBigInt} b unsigned big integer
+     * @param {UBigInt|number} a unsigned big integer
+     * @param {UBigInt|number} b unsigned big integer
      * @returns {UBigInt} new unsigned big integer
      */
     static add(a, b){
+        if (typeof(a) == 'number') a = UBigInt.toUBigInt(a);
+        if (typeof(b) == 'number') b = UBigInt.toUBigInt(b);
         let res = new UBigInt();
         res.m = addArrays(a.m, b.m);
         return res;

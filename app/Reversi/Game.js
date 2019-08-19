@@ -11,7 +11,7 @@ class Game{
         }
         else{
             this.board = new Board();
-            this.cpuSide = Math.random > 0.5 ? Board.Cell.White : Board.Cell.Black;
+            this.cpuSide = Math.random() > 0.5 ? Board.Cell.White : Board.Cell.Black;
             this.stack = [];
         }
     }
@@ -43,16 +43,18 @@ class Game{
     printStack(){
         for (let i = 0; i < this.stack.length; i++)
         {
+            let move = this.stack[i];
+            console.log(`dt=${move.dt}`);
             for (let y = 0; y < 8; y++){
-                let cell = this.stack[i].m[0][y];
+                let cell = move.m[0][y];
                 let str = cell == 0 ? '_' : cell;
                 for (let x = 1; x < 8; x++){
-                    cell = this.stack[i].m[x][y];
+                    cell = move.m[x][y];
                     str = str + `|${cell == 0 ? '_' : cell}`;
                 }
                 console.log(str);
             }
-            console.log(`player ${this.stack[i].player} (${this.stack[i].x}, ${this.stack[i].y})\n`);
+            console.log(`player ${move.player} (${move.x}, ${move.y})\n`);
         }
     }
 }
