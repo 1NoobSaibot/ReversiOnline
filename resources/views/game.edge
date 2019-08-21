@@ -31,6 +31,7 @@
         let res = (await axios.post("{{url}}/game/simple/cpumove")).data;
         if (res == 'accepted') await updateTable();
         game = (await axios.post("{{ url }}/game/simple/game")).data;
+        if (game.board.gameOver) break;
       }while(game.cpuSide == game.board.currentPlayer);
     }
 

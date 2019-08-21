@@ -5,6 +5,7 @@ const Board = use('App/Reversi/Board');
 class Game{
     constructor(json){
         if (json){
+            if (typeof(json) == 'string') json = JSON.parse(json);
             this.board = new Board(json.board);
             this.cpuSide = json.cpuSide;
             this.stack = json.stack;
@@ -38,6 +39,21 @@ class Game{
             cpuSide: this.cpuSide,
             board: this.board.toEdgeArg()
         }
+    }
+
+    /**
+     * @returns {number} White|Black|Empty value
+     */
+    getWinner(){
+        let white = 0, black = 0;
+        for (let x = 0; x < 8; x++)
+            for (let y = 0; y < 8; y++)
+                if (this.board.m[x][y] == Board.Cell.White) white++
+                else if(this.board.m[x][y] == Board.Cell.Black) black++;
+
+        if (white > black) return Board.Cell.White;
+        if (black > white) return Board.Cell.Black;
+        return Board.Cell.Empty;
     }
 
     printStack(){
