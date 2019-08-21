@@ -14,7 +14,7 @@ class GameSchema extends Schema {
   }
 
   down () {
-    this.drop('game').ifExists();
+    this.dropIfExists('game');
   }
 }
 

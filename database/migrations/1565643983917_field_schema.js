@@ -6,14 +6,14 @@ const Schema = use('Schema')
 class FieldSchema extends Schema {
   up () {
     this.create('field', (table) => {
-      table.increments()
-      table.decimal('dt', 31, 0).unsigned().unique().index();
+      table.decimal('dt', 32, 0).unsigned().primary();
       table.integer('last_time').unsigned();
+      table.text('options').notNullable();
     })
   }
 
   down () {
-    this.drop('field')
+    this.dropIfExists('field');
   }
 }
 

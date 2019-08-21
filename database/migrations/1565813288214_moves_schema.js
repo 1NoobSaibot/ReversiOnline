@@ -18,7 +18,7 @@ class MovesSchema extends Schema {
   }
 
   down () {
-    this.drop('moves').ifExists();
+    this.dropIfExists('moves');
   }
 }
 
