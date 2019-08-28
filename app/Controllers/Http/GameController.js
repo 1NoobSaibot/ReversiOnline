@@ -21,7 +21,7 @@ class GameController{
         try{
             const game = getGame(session);
             if (!game || game.isCpuMove() || !game.move(x, y)) return response.send('rejected');
-            if (game.isOver()) await getExperience(game);
+            if (game.isOver()) getExperience(game);
             putGame(session, game);
             return response.send('accepted');
         }catch(e){
@@ -33,12 +33,23 @@ class GameController{
         try{
             const game = getGame(session);
             if (!game || !game.isCpuMove() || game.isOver()) return response.send('rejected');
+            let v; 
+
+            const field = await Field.findBy('dt', game.board.getFriendsFoesDt().toString());
             const moves = game.board.getPossibleMoves();
-            let i = Math.round(Math.random() * moves.length);
-            i = (i == moves.length ? 0: i);
-            const v = moves[i];
+            if (!field) {
+                let i = Math.round(Math.random() * moves.length);
+                i = (i == moves.length ? 0: i);
+                v = moves[i];
+            }
+            else{
+                const probabilities = field.options;
+                bindProbabilitiesToMoves(moves, probabilities);
+                v = selectMove(moves);
+            }
+
             if (!game.move(v.x, v.y)) throw new Error('Не могу сделать ход!');
-            if (game.isOver()) await getExperience(game);
+            if (game.isOver()) getExperience(game);
             putGame(session, game);
             return response.send('accepted');
         }catch(e){
@@ -109,4 +120,33 @@ function getResult(winner, player){
     if (winner == Board.Cell.Empty) return 1;
     if (winner == player) return 2;
     return 0;
+}
+
+function bindProbabilitiesToMoves(moves, probs){
+    for (let i = 0; i < moves.length; i++){
+        const {x, y} = moves[i];
+        if (!probs[x] || !probs[x][y]) moves[i].value = 0.5;
+        else moves[i].value = getValue(probs[x][y]);
+    }
+}
+
+function getValue(probs){
+    const sum = (probs.w + probs.d + probs.l) * 1.0;
+    return sum == 0 ? 0.5 : (probs.d / (sum * 2) + probs.w / sum);
+}
+
+function selectMove(moves){
+    let sum = 0;
+    for (let i = 0; i < moves.length; i++)
+        sum += moves.value;
+    
+    for (let i = 1; i < moves.length; i++)
+        moves[i].value += moves[i-1].value;
+
+    let r = Math.random() * sum;
+
+    for (let i = 0; i < moves.length; i++)
+        if (moves[i].value > r) return moves[i];
+
+    return moves[moves.length-1];
 }
