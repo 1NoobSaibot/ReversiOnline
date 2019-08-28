@@ -4,20 +4,24 @@
   <meta charset="UTF-8" />
   <title>ReversiOnline</title>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vuex"></script>
   {{ style('style') }}
 </head>
-<body onload="startGame()">
-  <table id="board">
-    @each(row in m)
-      <tr>
-        @each(cell in row)
-          <td onclick="move(this)">{{cell ? cell : " "}}</td>
-        @endeach
-      </tr>
-    @endeach
-  </table>
+<body onload="store.dispatch('startGame')">
+  <div id="app">
+    <table id="board">
+      @each(row in m)
+        <tr>
+          @each(cell in row)
+            <td onclick="store.dispatch('move', this)">{{cell ? cell : " "}}</td>
+          @endeach
+        </tr>
+      @endeach
+    </table>
+  </div>
   <script type="text/JavaScript">
-    async function startGame(){
+    /*async function startGame(){
       let res = (await axios.post("{{url}}/game/simple/start")).data;
       if (res != 'GameIsReady') throw new Error('ERROR! Game is not ready');
       let game = (await axios.post("{{ url }}/game/simple/game")).data;
@@ -69,7 +73,88 @@
       }catch(e){
         console.error(e.message);
       }
+    }*/
+
+    function updateTable(){
+      try{
+        let board = store.state.game.board;
+
+        const table = document.getElementById('board');
+        for (let i = 0; i < 8; i++)
+          for (let j = 0; j < 8; j++)
+            table.children[0].children[i].children[j].textContent = board.m[i][j] == '0' ? ' ' : board.m[i][j];
+      }catch(e){
+        console.error(e.message);
+      }
     }
+
+    Vue.use(Vuex);
+
+    const store = new Vuex.Store({
+      state: {
+        game: null
+      },
+      mutations: {
+        setGame (state, game){
+          state.game = game;
+          updateTable();
+        }
+      },
+      actions: {
+        async move ({commit, dispatch}, cell) {
+          
+          let x = cell.cellIndex;
+          let y = cell.parentNode.rowIndex;
+          
+          try{
+            let res = (await axios.post("{{ url }}/game/simple/move", {params:{x, y}})).data;
+            if (res == 'accepted') {
+              let game = (await axios.post("{{ url }}/game/simple/game")).data;
+              commit('setGame', game);
+              if (game.board.gameOver) {
+                console.log('GameOver');
+                res = (await axios.post("{{url}}/game/simple/start")).data;
+                if (res == 'GameIsReady') {
+                  let game = (await axios.post("{{ url }}/game/simple/game")).data;
+                  commit('setGame', game);
+                }
+              }
+              else if (game.cpuSide == game.board.currentPlayer)
+                await dispatch('cpuMove');
+            }
+          }
+          catch(e){
+            console.log(e.message);
+          }
+        },
+
+        async startGame({state, commit, dispatch}){
+          let res = (await axios.post("{{url}}/game/simple/start")).data;
+          if (res != 'GameIsReady') throw new Error('ERROR! Game is not ready');
+          let game = (await axios.post("{{ url }}/game/simple/game")).data;
+          commit('setGame', game);
+          if (game.cpuSide == game.board.currentPlayer) await dispatch('cpuMove');
+        },
+
+        async cpuMove({commit}){
+          let game;
+          do{
+            let res = (await axios.post("{{url}}/game/simple/cpumove")).data;
+            if (res == 'accepted') {
+              game = (await axios.post("{{ url }}/game/simple/game")).data;
+              commit('setGame', game);
+              if (game.board.gameOver) break;
+            }
+          }while(game.cpuSide == game.board.currentPlayer);
+        },
+      }
+          
+    });
+
+    const vue = new Vue({
+      el: "#app",
+      store
+    })
   </script>
 </body>
 </html>
