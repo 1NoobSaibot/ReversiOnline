@@ -53,6 +53,28 @@ class UBigInt{
         }
         return res;
     }
+
+    /**
+     * -1 when a < b
+     * 0 when a == b
+     * 1 when a > b
+     * @param {UBigInt} a 
+     * @param {UBigInt} b 
+     * @returns {number}
+     */
+    static compare(a, b){
+        let iStart = a.m.length > b.m.length ? a.m.length : b.m.length;
+        iStart--;
+
+        for (let i = iStart; i >= 0; i--){
+            let _a = a.m[i] ? a.m[i] : 0;
+            let _b = b.m[i] ? b.m[i] : 0;
+            if (_a > _b) return 1;
+            if (_a < _b) return -1;
+        }
+
+        return 0;
+    }
 }
 
 module.exports = UBigInt;

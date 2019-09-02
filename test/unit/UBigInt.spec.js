@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = use('Test/Suite')('Example');
+const { test } = use('Test/Suite')('UBigInt');
 const UBigInt = use('App/Reversi/UBigInt');
 
 test('ToBigInt() and toString()', async ({ assert }) => {
@@ -27,6 +27,19 @@ test('UBigInt.mul(a, b)', async ({ assert }) => {
       let a = UBigInt.toUBigInt(i);
       let c = UBigInt.mul(a, j);
       assert.equal((i * j).toString(), c.toString());
+    }
+  }
+});
+
+test('UBigInt.compare(a, b)', async ({ assert }) => {
+  for (let i = 0; i <= 1000; i++){
+      for (let j = 0; j <= 1000; j++){
+      let a = UBigInt.toUBigInt(i);
+      let b = UBigInt.toUBigInt(j);
+      
+      if (i > j) assert.equal(UBigInt.compare(a, b), 1);
+      else if (i < j) assert.equal(UBigInt.compare(a, b), -1);
+      else assert.equal(UBigInt.compare(a, b), 0);
     }
   }
 });
