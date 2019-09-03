@@ -58,12 +58,7 @@
               let game = await postGame();
               commit('setGame', game);
               if (game.board.gameOver) {
-                console.log('GameOver');
-                res = await postStartGame();
-                if (res == 'GameIsReady') {
-                  let game = await postGame();
-                  commit('setGame', game);
-                }
+                dispatch('restart');
               }
               else if (game.cpuSide == game.board.currentPlayer)
                 await dispatch('cpuMove');
@@ -82,17 +77,25 @@
           if (game.cpuSide == game.board.currentPlayer) await dispatch('cpuMove');
         },
 
-        async cpuMove({commit}){
+        async cpuMove({commit, dispatch}){
           let game;
           do{
             let res = await postCpuMove();
             if (res == 'accepted') {
               game = await postGame();
               commit('setGame', game);
-              if (game.board.gameOver) break;
+              if (game.board.gameOver) {
+                dispatch('restart');
+                break; 
+              }
             }
           }while(game.cpuSide == game.board.currentPlayer);
         },
+
+        async restart({commit, dispatch}){
+          console.log('GameOver');
+          await dispatch('startGame');
+        }
       }
           
     });
@@ -107,7 +110,7 @@
     }
 
     async function postCpuMove(){
-      return (await axios.post("{{url}}/game/simple/cpumove")).data;
+      return (await axios.post("{{ url }}/game/simple/cpumove")).data;
     }
 
     async function postGame(){
@@ -115,7 +118,7 @@
     }
 
     async function postStartGame() {
-      return (await axios.post("{{url}}/game/simple/start")).data;
+      return (await axios.post("{{ url }}/game/simple/start")).data;
     }
   </script>
 </body>

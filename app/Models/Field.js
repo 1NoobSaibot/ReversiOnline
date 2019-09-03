@@ -2,6 +2,7 @@
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model');
+const Transform = use('App/Reversi/Transform');
 
 class Field extends Model{
     static get table(){
@@ -16,6 +17,7 @@ class Field extends Model{
                 field.options = from2Dto1D(field.options);
                 field.options = JSON.stringify(field.options);
             }
+            delete field.$attributes.transform;
         });
         this.addHook('afterFind', (field) => {
             field.options = JSON.parse(field.options);
@@ -24,6 +26,10 @@ class Field extends Model{
     }
 
     add(x, y, res){
+        let point = this.transform.translate({x, y});
+        x = point.x;
+        y = point.y;
+
         if (!this.options[x]) this.options[x] = [];
         if (!this.options[x][y]) {
             this.options[x][y] = {
@@ -53,6 +59,41 @@ class Field extends Model{
     static get primaryKey () {
         return 'dt'
     }
+
+    /**
+     * 
+     * @param {number[][]} m friend-foes board 
+     */
+    static async search(m){
+        let transform = new Transform(m);
+        transform = transform.toMinDt();
+        let dt = transform.getDt();
+
+        let field = await Field.findBy('dt', dt.toString());
+        if (field) {
+            field.transform = transform;
+            return field;
+        }
+        return null;
+    }
+
+    getOptions(){
+        let m = [];
+
+        for (let i = 0; i < 8; i++){
+            if (this.options[i]){
+                for (let j = 0; j < 8; j++){
+                    if (this.options[i][j]) {
+                        const {x, y} = this.transform.translateBack({i, j});
+                        if (!m[x]) m[x] = [];
+                        m[x][y] = this.options[i][j];
+                    }
+                }
+            }
+        }
+        
+        return m;
+    }
 }
 
 module.exports = Field;
@@ -72,7 +113,7 @@ function from1Dto2D(options){
     for (let i = 0; i < options.length; i++){
         const {x, y, w, d, l} = options[i];
         if (!m[x]) m[x] = [];
-        m[x][y] = {w:w, d:d, l:l};
+        m[x][y] = {w, d, l};
     }
     return m;
 }

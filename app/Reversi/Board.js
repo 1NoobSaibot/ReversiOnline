@@ -46,6 +46,7 @@ class Board{
         let res = {
             x, y, player: this.currentPlayer,
             m: this.getMatrix(),
+            ffm: this.getFriendsFoes(),
             dt: this.getFriendsFoesDt().toString()
         }
         if (this.gameOver || !set(this, x, y)) return false;

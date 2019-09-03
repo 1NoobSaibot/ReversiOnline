@@ -49,8 +49,14 @@ class Transform {
 
     translate(point) {
         for (let i = 0; i < this.trs.length; i++){
-            console.dir(point);
             point = this[this.trs[i]](point);
+        }
+        return point;
+    }
+
+    translateBack(point) {
+        for (let i = this.trs.length - 1; i >= 0; i--){
+            point = this['_' + this.trs[i]](point);
         }
         return point;
     }
@@ -66,6 +72,20 @@ class Transform {
         return{
             x: 7 - point.y,
             y: point.x
+        }
+    }
+    
+    _h(point){
+        return {
+            x: point.x,
+            y: 7- point.y
+        }
+    }
+
+    _r90(point){
+        return{
+            x: point.y,
+            y: 7 - point.x
         }
     }
 }

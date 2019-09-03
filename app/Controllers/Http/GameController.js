@@ -8,6 +8,7 @@
 const Game = use('App/Reversi/Game');
 const Board = use('App/Reversi/Board');
 const Field = use('App/Models/Field');
+const Transform = use('App/Reversi/Transform');
 
 class GameController{
     board({session, response}){
@@ -21,7 +22,7 @@ class GameController{
         try{
             const game = getGame(session);
             if (!game || game.isCpuMove() || !game.move(x, y)) return response.send('rejected');
-            if (game.isOver()) getExperience(game);
+            if (game.isOver()) getExperience(game).catch((e)=>{console.dir(e)});
             putGame(session, game);
             return response.send('accepted');
         }catch(e){
@@ -35,7 +36,7 @@ class GameController{
             if (!game || !game.isCpuMove() || game.isOver()) return response.send('rejected');
             let v; 
 
-            const field = await Field.findBy('dt', game.board.getFriendsFoesDt().toString());
+            const field = await Field.search(game.board.getFriendsFoes());
             const moves = game.board.getPossibleMoves();
             if (!field) {
                 let i = Math.round(Math.random() * moves.length);
@@ -43,17 +44,17 @@ class GameController{
                 v = moves[i];
             }
             else{
-                const probabilities = field.options;
+                const probabilities = field.getOptions();
                 bindProbabilitiesToMoves(moves, probabilities);
                 v = selectMove(moves);
             }
 
             if (!game.move(v.x, v.y)) throw new Error('Не могу сделать ход!');
-            if (game.isOver()) getExperience(game);
+            if (game.isOver()) getExperience(game).catch((e)=>{console.dir(e)});
             putGame(session, game);
             return response.send('accepted');
         }catch(e){
-            console.log(e.message);
+            console.dir(e);
         }
     }
 
@@ -90,14 +91,17 @@ async function getExperience(game){
     const stack = game.stack;
     for (let i = 0; i < stack.length; i++){
         const move = stack[i];
-        let field = await Field.findBy('dt', move.dt);
+        let field = await Field.search(move.ffm);
         if (!field) 
         {
+            let transform = new Transform(move.ffm);
+            transform = transform.toMinDt();
+            const {x, y} = transform.translate({x: move.x, y: move.y});
             let options = [];
-            options[move.x] = [];
-            options[move.x][move.y] = getNewOption(winner, move.player);
+            options[x] = [];
+            options[x][y] = getNewOption(winner, move.player);
             field = await Field.create({
-                dt: move.dt,
+                dt: transform.getDt().toString(),
                 last_time: Date.now() / 1000,
                 options
             });

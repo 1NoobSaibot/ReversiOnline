@@ -121,4 +121,10 @@ test('Transform.translate()', async ({assert})=>{
     let point = {x: 0, y: 1};
     point = tr.translate(point);
     assert.deepEqual(point, {x: 6, y: 7});
+});
+
+test('Transform.translateBack()', async ({assert})=>{
+    let point = {x: 6, y: 7};
+    point = tr.translateBack(point);
+    assert.deepEqual(point, {x: 0, y: 1});
 })
