@@ -96,21 +96,24 @@ async function getExperience(game){
         {
             let transform = new Transform(move.ffm);
             transform = transform.toMinDt();
-            const {x, y} = transform.translate({x: move.x, y: move.y});
-            let options = [];
-            options[x] = [];
-            options[x][y] = getNewOption(winner, move.player);
-            field = await Field.create({
-                dt: transform.getDt().toString(),
-                last_time: Date.now() / 1000,
-                options
-            });
+            let groups = transform.getGroups(move.possibleMoves);
+            if (groups.length > 1){
+                const {x, y} = transform.translate({x: move.x, y: move.y});
+                let options = [];
+                options[x] = [];
+                options[x][y] = getNewOption(winner, move.player);
+                field = await Field.create({
+                    dt: transform.getDt().toString(),
+                    last_time: Date.now() / 1000,
+                    options
+                });
+            }
         }
         else {
             const result = getResult(winner, move.player);
             field.add(move.x, move.y, result);
         }
-        await field.save();
+        if (field) await field.save();
     }
 }
 

@@ -78,17 +78,20 @@ class Field extends Model{
     }
 
     getOptions(){
+        //options => sharedOptions
+        let sharedOptions = this.transform.shareOptions(this.options);
+
+        //sharedOptions => translatedOptions
         let m = [];
 
         for (let i = 0; i < 8; i++){
-            if (this.options[i]){
-                for (let j = 0; j < 8; j++){
-                    if (this.options[i][j]) {
-                        const {x, y} = this.transform.translateBack({i, j});
-                        if (!m[x]) m[x] = [];
-                        m[x][y] = this.options[i][j];
-                    }
-                }
+            if (!sharedOptions[i]) continue;
+            for (let j = 0; j < 8; j++){
+                if (!sharedOptions[i][j]) continue;
+                const {x, y} = this.transform.translateBack({x:i, y:j});
+
+                if (!m[x]) m[x] = [];
+                m[x][y] = sharedOptions[i][j];
             }
         }
         

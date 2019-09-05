@@ -4,16 +4,20 @@ const { test } = use('Test/Suite')('Transform');
 /** @type {typeof import('App/Reversi/Transform.js')} */
 const Transform = use('App/Reversi/Transform');
 
-let tr = new Transform([
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0]
-]);
+let tr 
+
+test('new Transform()', async ()=>{
+    tr = new Transform([
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0]
+    ]);
+});
 
 test('Transform.horReflect()', async ({ assert }) => {
     tr = tr.horReflect();

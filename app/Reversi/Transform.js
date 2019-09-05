@@ -2,8 +2,7 @@
 
 /** @type {typeof import('App/Reversi/Determinant.js')}*/
 const getDt = use('App/Reversi/Determinant');
-/** @type {typeof import from('App/Reversi/Matrix8.js')}*/
-const Matrix8 = use('App/Reversi/Matrix8');
+const Symmetry = use('App/Reversi/Symmetry');
 const UBigInt = use('App/Reversi/UBigInt');
 
 class Transform {
@@ -11,7 +10,7 @@ class Transform {
      * @param {Matrix8} m
      */
     constructor (m) {
-        this.m = new Matrix8(m);
+        this.m = new Symmetry(m);
         this.trs = [];
     }
 
@@ -51,7 +50,17 @@ class Transform {
         for (let i = 0; i < this.trs.length; i++){
             point = this[this.trs[i]](point);
         }
-        return point;
+
+        let points = this.m.getPointsOfGroupWith(point);
+        points.sort((a, b) => {
+            if (a.x < b.x) return -1;
+            if (a.x > b.x) return 1;
+            if (a.y < b.y) return -1;
+            if (a.y > b.y) return 1;
+            return 0;
+        });
+
+        return points[0];
     }
 
     translateBack(point) {
@@ -59,6 +68,35 @@ class Transform {
             point = this['_' + this.trs[i]](point);
         }
         return point;
+    }
+
+    getGroups(moves){
+        return this.m.groupUp(moves);
+    }
+
+    /**
+     * 
+     * @param {object[][]} options 
+     * @returns {object[][]}
+     */
+    shareOptions(options){
+        let res = [];
+
+        for (let x0 = 0; x0 < 8; x0++) {
+            if (!options[x0]) continue;
+            for (let y0 = 0; y0 < 8; y0++){
+                if(!options[x0][y0]) continue;
+                let group = this.m.getPointsOfGroupWith({x:x0, y:y0});
+                for (let i = 0; i < group.length; i++){
+                    const {x, y} = group[i];
+                    if (!res[x]) res[x] = [];
+                    if (res[x][y]) throw new Error('This point must be empty!');
+                    res[x][y] = options[x0][y0];
+                }
+            }
+        }
+
+        return res;
     }
 
     h(point){

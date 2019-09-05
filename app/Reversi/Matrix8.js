@@ -20,58 +20,82 @@ class Matrix8 extends Array{
     }
 
     /**
-     * @returns {Matrix8}
+     * 
+     * @param {number[][]|Matrix8|Symmetry} res 
+     * @returns {Matrix8|any}
      */
-    getHorReflect(){
-        let res = new Matrix8();
-
-        for(let i = 0; i < 8; i++){
-            for (let j = 0; j < 8; j++){
-                res[i][7-j] = this[i][j];
-            }
-        }
-
-        return res;
+    getHorReflect(res){
+        return Matrix8.horReflect(this, res);
     }
+
     
     /**
-     * @returns {Matrix8}
+     * 
+     * @param {number[][]|Matrix8|Symmetry} res 
+     * @returns {Matrix8|any}
      */
-    getVerReflect(){
-        let res = new Matrix8();
+    getVerReflect(res){
+        return Matrix8.verReflect(this, res);
+    }
+
+    /**
+     * 
+     * @param {number[][]|Matrix8|Symmetry} res 
+     * @returns {Matrix8|any}
+     */
+    getTransposed(res){
+        return Matrix8.transpose(this, res);
+    }
+
+    /**
+     * 
+     * @param {number[][]|Matrix8|Symmetry} res 
+     * @returns {Matrix8|any}
+     */
+    getRotated90(res) {
+        return Matrix8.rotate90(this, res);
+    }
+
+    static horReflect(source, res){
+        res = res ? res : new Matrix8();
 
         for(let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
-                res[7-i][j] = this[i][j];
+                res[i][7-j] = source[i][j];
             }
         }
 
         return res;
     }
 
-    /**
-     * @returns {Matrix8}
-     */
-    getTransposed(){
-        let res = new Matrix8();
+    static verReflect(source, res){
+        res = res ? res : new Matrix8();
+
+        for(let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                res[7-i][j] = source[i][j];
+            }
+        }
+
+        return res;
+    }
+
+    static transpose(source, res){
+        res = res ? res : new Matrix8();
         
         for(let x = 0; x < 8; x++)
             for(let y = 0; y < 8; y++)
-                res[x][y] = this[y][x];
+                res[x][y] = source[y][x];
 
         return res;
     }
 
-
-    /**
-     * @returns {Matrix8}
-     */
-    getRotated90() {
-        let res = new Matrix8();
+    static rotate90(source, res){
+        res = res ? res : new Matrix8();
 
         for(let x = 0; x < 8; x++)
             for(let y = 0; y < 8; y++)
-                res[7-y][x] = this[x][y];
+                res[7-y][x] = source[x][y];
 
         return res;
     }

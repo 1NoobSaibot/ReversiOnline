@@ -9,7 +9,6 @@ test('Field/create', async ({}) => {
         last_time: Date.now() / 1000,
         options: [[{w: 1, d: 0, l: 0}]]
     });
-    console.dir(field);
 });
 
 test('Field.search()', async ({}) => {
@@ -23,12 +22,25 @@ test('Field.search()', async ({}) => {
         [0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0]
     ]);
-    console.dir(field);
 });
 
-test('Field.add()', async () => {
-    field.add(0, 0, 0);
+test('Field.add()', async ({assert}) => {
+    field.add(0, 7, 0);
+    assert.deepEqual(field.options, [[{w:1, d:0, l:1}]]);
+    field.add(1, 7, 2);
+    assert.deepEqual(field.options, [[{w:1, d:0, l:1},{w:1, d:0, l:0}]]);
 });
+
+test('Field.options', async ({assert}) => {
+    let options = field.getOptions();
+    assert.deepEqual(options, [
+        [{w:1, d:0, l:1},{w:1, d:0, l:0}, undefined, undefined, undefined, undefined, {w:1, d:0, l:0}, {w:1, d:0, l:1}],
+        [{w:1, d:0, l:0}, undefined, undefined, undefined, undefined, undefined, undefined, {w:1, d:0, l:0}],
+        undefined, undefined, undefined, undefined,
+        [{w:1, d:0, l:0}, undefined, undefined, undefined, undefined, undefined, undefined, {w:1, d:0, l:0}],
+        [{w:1, d:0, l:1},{w:1, d:0, l:0}, undefined, undefined, undefined, undefined, {w:1, d:0, l:0}, {w:1, d:0, l:1}],
+    ]);
+})
 
 test('Field.save()', async ({}) => {
     await field.save();

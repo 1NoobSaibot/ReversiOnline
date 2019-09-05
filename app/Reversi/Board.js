@@ -47,7 +47,7 @@ class Board{
             x, y, player: this.currentPlayer,
             m: this.getMatrix(),
             ffm: this.getFriendsFoes(),
-            dt: this.getFriendsFoesDt().toString()
+            possibleMoves: this.getPossibleMoves()
         }
         if (this.gameOver || !set(this, x, y)) return false;
 
