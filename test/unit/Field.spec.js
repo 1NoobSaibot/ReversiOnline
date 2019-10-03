@@ -50,3 +50,5 @@ test('field.delete()', async ({}) => {
     let field = await Field.findBy('dt', 0);
     if (field) await field.delete();
 });
+
+//Привет Вселенная!
