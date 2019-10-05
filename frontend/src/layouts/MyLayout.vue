@@ -16,6 +16,14 @@
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          flat
+          dense
+          round
+          to="/start"
+          icon="menu"
+          aria-label="Menu"
+        />
       </q-toolbar>
     </q-header>
 

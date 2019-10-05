@@ -1,4 +1,6 @@
-import Vue from 'vue'
 import axios from 'axios'
 
-Vue.prototype.$axios = axios
+export default async ({ Vue, store }) => {
+  Vue.prototype.$axios = axios
+  store.constructor.prototype.$axios = axios
+}

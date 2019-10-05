@@ -8,7 +8,8 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
     boot: [
       'i18n',
-      'axios'
+      'axios',
+      'components'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -80,7 +81,18 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       // https: true,
-      // port: 8080,
+      port: 8081,
+      proxy: {
+        // proxy all requests starting with /api to jsonplaceholder
+        '/game': {
+          target: 'http://localhost:3338',
+          changeOrigin: true
+        },
+        '/files': {
+          target: 'http://localhost:3338',
+          changeOrigin: true
+        }
+      },
       open: true // opens browser window automatically
     },
 

@@ -31,10 +31,10 @@ Route.group(()=>{
 }).prefix('guest');
 
 Route.group(()=>{
-    Route.post('simple/board', 'GameController.board');
-    Route.post('simple/move', 'GameController.move');
-    Route.post('simple/start', 'GameController.start');
-    Route.post('simple/cpumove', 'GameController.cpuMove');
-    Route.post('simple/game', 'GameController.game');
+    Route.get('simple/board', 'GameController.board');
+    Route.get('simple/move', 'GameController.move');
+    Route.get('simple/start', 'GameController.start');
+    Route.get('simple/cpumove', 'GameController.cpuMove');
+    Route.get('simple/game', 'GameController.game');
 }).prefix('game');
 
