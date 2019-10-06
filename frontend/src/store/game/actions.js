@@ -39,7 +39,8 @@ export async function restart ({ dispatch }) {
   await dispatch('start')
 }
 
-export async function updateGame ({ commit }) {
-  let game = (await this.$axios.get('/game/simple/game')).data
+export async function updateGame ({ commit, state }) {
+  let arg = { params: { tips: state.settings.tips } }
+  let game = (await this.$axios.get('/game/simple/game', arg)).data
   commit('setGame', game)
 }

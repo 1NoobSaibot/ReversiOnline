@@ -1,7 +1,11 @@
 <template>
   <div>
     <div>White({{wCounter}}) Black({{bCounter}}) </div>
-    <Board :m="value ? value.board.m : null"/>
+    <Board
+      :m="value ? value.board.m : null"
+      :probs="value ? value.board.probs : null"
+    />
+    <GameSettings/>
   </div>
 </template>
 

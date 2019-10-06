@@ -67,9 +67,10 @@ class GameController {
     catch (e) { console.log(e.message); }
   }
 
-  game({ session, response }) {
+  async game({ session, request, response }) {
+    const params = request.all()
     const game = getGame(session);
-    response.json(game.toClient());
+    response.json(await game.toClient(params));
   }
 }
 
