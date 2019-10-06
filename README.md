@@ -19,7 +19,7 @@ Use the adonis command to install the blueprint
 adonis new yardstick
 ```
 
-or manually clone the repo and then run `npm install`.
+or manually clone the repo and then run `npm i`.
 
 
 ### Migrations
@@ -28,4 +28,11 @@ Run the following command to run startup migrations.
 
 ```js
 adonis migration:run
+```
+
+Run in debug mode
+
+```bash 
+adonis serve
+./frontend> quasar dev
 ```
