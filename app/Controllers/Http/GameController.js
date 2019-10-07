@@ -46,7 +46,7 @@ class GameController {
       else {
         const probabilities = field.getOptions();
         bindProbabilitiesToMoves(moves, probabilities);
-        v = selectMove(moves);
+        v = selectMove(moves, session.get('hard'));
       }
 
       if (!game.move(v.x, v.y)) throw new Error('Не могу сделать ход!');
@@ -71,6 +71,11 @@ class GameController {
     const params = request.all()
     const game = getGame(session);
     response.json(await game.toClient(params));
+  }
+
+  setCpuMode ({ session, request }) {
+    const { hard } = request.all()
+    session.put('hard', hard)
   }
 }
 
@@ -132,28 +137,60 @@ function getResult(winner, player) {
 function bindProbabilitiesToMoves(moves, probs) {
   for (let i = 0; i < moves.length; i++) {
     const { x, y } = moves[i];
-    if (!probs[x] || !probs[x][y]) moves[i].value = 0.5;
-    else moves[i].value = getValue(probs[x][y]);
+    if (!probs[x] || !probs[x][y]) {
+      moves[i].value = 0.5;
+      moves[i].w = 0.333;
+      moves[i].d = 0.333;
+      moves[i].l = 0.333;
+    }
+    else attachValue(moves[i], probs[x][y]);
   }
 }
 
-function getValue(probs) {
+function attachValue(move, probs) {
   const sum = (probs.w + probs.d + probs.l) * 1.0;
-  return sum == 0 ? 0.5 : (probs.d / (sum * 2) + probs.w / sum);
+  move.value = sum == 0 ? 0.5 : (probs.d / (sum * 2) + probs.w / sum);
+  move.w = probs.w / sum;
+  move.d = probs.d / sum;
+  move.l = probs.l / sum;
 }
 
-function selectMove(moves) {
-  let sum = 0;
-  for (let i = 0; i < moves.length; i++)
-    sum += moves.value;
+function selectMove(moves, hard) {
+  if (typeof(hard) === 'string') hard = hard === 'true'
+  if (hard) {
+    //Выбрать ходы с максимальным показателем шанса на победу
+    let max = [moves[0]]
+    for (let i = 1; i < moves.length; i++) {
+      if (max[0].w > moves[i].w) continue
+      if (max[0].w == moves[i].w) max.push(moves[i])
+      else max = [moves[i]]
+    }
+    if (max.length == 1) return max[0]
 
-  for (let i = 1; i < moves.length; i++)
-    moves[i].value += moves[i - 1].value;
+    //Выбрать среди самых победных ходов самый ничейный
+    let max2 = [max[0]]
+    for (let i = 1; i < max.length; i++) {
+      if (max2[0].d > max[i].d) continue
+      if (max2[0].d == max[i].d) max2.push(max[i])
+      else max2 = [max[i]]
+    }
+    if (max2.length == 1) return max2[0]
+    let index = Math.round(Math.random() * max2.length)
+    if (index >= max2.length) index = 0
+    return max2[index]
+  }
+  else {
+    let sum = 0;
+    for (let i = 0; i < moves.length; i++)
+      sum += moves.value;
 
-  let r = Math.random() * sum;
+    for (let i = 1; i < moves.length; i++)
+      moves[i].value += moves[i - 1].value;
 
-  for (let i = 0; i < moves.length; i++)
-    if (moves[i].value > r) return moves[i];
+    let r = Math.random() * sum;
 
+    for (let i = 0; i < moves.length; i++)
+      if (moves[i].value > r) return moves[i];
+  }
   return moves[moves.length - 1];
 }

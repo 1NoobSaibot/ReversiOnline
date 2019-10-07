@@ -1,3 +1,4 @@
 export default {
-  tips: false
+  tips: false,
+  sleep: false
 }

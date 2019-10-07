@@ -36,5 +36,6 @@ Route.group(()=>{
     Route.get('simple/start', 'GameController.start');
     Route.get('simple/cpumove', 'GameController.cpuMove');
     Route.get('simple/game', 'GameController.game');
+    Route.get('simple/cpumode', 'GameController.setCpuMode');
 }).prefix('game');
 

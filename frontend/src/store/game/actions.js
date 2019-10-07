@@ -19,15 +19,16 @@ export async function start ({ dispatch, getters }) {
   return res
 }
 
-export async function cpuMove ({ dispatch, getters }) {
+export async function cpuMove ({ dispatch, getters, state }) {
   let accepted = false
   do {
+    if (state.settings.sleep) await sleep(4000)
     let res = (await this.$axios.get('game/simple/cpumove')).data
     if (res === 'accepted') {
       accepted = true
-      dispatch('updateGame')
+      await dispatch('updateGame')
       if (getters.gameOver) {
-        dispatch('restart')
+        await dispatch('restart')
         break
       }
     }
@@ -43,4 +44,12 @@ export async function updateGame ({ commit, state }) {
   let arg = { params: { tips: state.settings.tips } }
   let game = (await this.$axios.get('/game/simple/game', arg)).data
   commit('setGame', game)
+}
+
+async function sleep (ms) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve()
+    }, ms)
+  })
 }
