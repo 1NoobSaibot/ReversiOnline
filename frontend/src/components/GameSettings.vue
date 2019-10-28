@@ -3,6 +3,7 @@
     <q-checkbox v-model="tips" @input="valueChanged">Tips</q-checkbox>
     <q-checkbox v-model="hardBot" @input="setMode">Hard Mode</q-checkbox>
     <q-checkbox v-model="sleep" @input="setSleep">CPU Sleep</q-checkbox>
+    <q-checkbox v-model="botXbot" @input="trainMode">Bot VS Bot</q-checkbox>
   </q-form>
 </template>
 
@@ -12,7 +13,8 @@ export default {
     return {
       tips: false,
       hardBot: false,
-      sleep: false
+      sleep: false,
+      botXbot: false
     }
   },
   methods: {
@@ -24,6 +26,10 @@ export default {
     },
     setSleep (value) {
       this.$store.commit('game/settings/sleep', value)
+    },
+    trainMode (value) {
+      this.$store.commit('game/setRunning', value)
+      if (value) this.$store.dispatch('game/run')
     }
   }
 }

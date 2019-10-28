@@ -33,7 +33,7 @@ class GameController {
   async cpuMove({ session, response }) {
     try {
       const game = getGame(session);
-      if (!game || !game.isCpuMove() || game.isOver()) return response.send('rejected');
+      if (!game || game.isOver()) return response.send('rejected');
       let v;
 
       const field = await Field.search(game.board.getFriendsFoes());
