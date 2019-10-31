@@ -26,9 +26,9 @@ export async function cpuMove ({ dispatch, state, getters }) {
     let res = (await this.$axios.get('game/simple/cpumove')).data
     if (res === 'accepted') {
       accepted = true
-      dispatch('updateGame')
+      await dispatch('updateGame')
       if (getters.gameOver) {
-        dispatch('gameOver')
+        await dispatch('gameOver')
         break
       }
     }
