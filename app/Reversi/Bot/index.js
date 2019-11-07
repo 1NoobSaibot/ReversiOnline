@@ -9,6 +9,7 @@ const Board = use('App/Reversi/Board')
 
 async function move (board, hard) {
   let moves = await Prepare(board)
+  hard = hard === true || hard === 'true'
   if (hard) return BotHard(moves)
   return BotVar(moves)
 }

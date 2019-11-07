@@ -6,7 +6,7 @@ module.exports = function selectMove(moves) {
 
   let sum = 0;
   for (let i = 0; i < moves.length; i++)
-    sum += moves.value;
+    sum += moves[i].value;
 
   for (let i = 1; i < moves.length; i++)
     moves[i].value += moves[i - 1].value;

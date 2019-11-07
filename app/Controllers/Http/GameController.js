@@ -5,9 +5,8 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 /** @typedef {import('@adonisjs/lucid/src/Database')} */
 
-const Game = use('App/Reversi/Game');
-const Bot = use('App/Reversi/Bot/index');
-const Field = use('App/Models/Field');
+const Game = use('App/Reversi/Game')
+const Bot = use('App/Reversi/Bot/index')
 
 
 class GameController {
