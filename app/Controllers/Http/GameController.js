@@ -16,33 +16,44 @@ class GameController {
   }
 
   async move({ session, request, response }) {
-    const { x, y } = request.all();
+    const params = request.all();
+    const { x, y } = params
 
-    try {
-      const game = getGame(session);
-      if (!game || game.isCpuMove() || !game.move(x, y)) return response.send('rejected');
-      if (game.isOver()) Bot.learn(game).catch((e) => { console.dir(e) });
-      putGame(session, game);
-      return response.send('accepted');
-    } catch (e) {
-      console.dir(e);
+    const game = getGame(session);
+    if (!game || game.isCpuMove() || !game.move(x, y)) {
+      return response.json({ status: 'fail' })
     }
+    if (game.isOver()) Bot.learn(game).catch((e) => { console.dir(e) })
+    putGame(session, game)
+    return response.json({
+      status: 'success',
+      game: await game.toClient(params)
+    })
   }
 
-  async cpuMove({ session, response }) {
-    try {
-      const game = getGame(session);
-      if (!game || game.isOver()) return response.send('rejected')
+  async cpuMove({ session, request, response }) {
+    const params = request.all()
+    const game = getGame(session)
+    if (!game || game.isOver()) return response.json({
+      status: 'fail',
+      description: game ? 'Игра окончена' : 'Игра не запущена'
+    })
 
-      let v = await Bot.move(game.board, session.get('hard'))
+    let v = await Bot.move(game.board, session.get('hard'))
 
-      if (!game.move(v.x, v.y)) throw new Error('Не могу сделать ход!')
-      if (game.isOver()) Bot.learn(game).catch((e) => { console.dir(e) })
-      putGame(session, game)
-      return response.send('accepted')
-    } catch (e) {
-      console.dir(e);
-    }
+    if (!game.move(v.x, v.y)) return response.json({
+      status: 'fail',
+      description: 'Бот не смог совершить ход',
+      board: await game.board.toClient({ tips: false }),
+      position: v
+    })
+
+    if (game.isOver()) Bot.learn(game).catch((e) => { console.dir(e) })
+    putGame(session, game)
+    return response.json({
+      status: 'success',
+      game: await game.toClient(params)
+    })
   }
 
   start({ session, response }) {

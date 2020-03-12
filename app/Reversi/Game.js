@@ -37,7 +37,7 @@ class Game {
   async toClient(params) {
     return {
       cpuSide: this.cpuSide,
-      board: await this.board.toEdgeArg(params)
+      board: await this.board.toClient(params)
     }
   }
 

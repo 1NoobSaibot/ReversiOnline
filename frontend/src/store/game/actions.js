@@ -6,27 +6,27 @@ export async function start ({ dispatch, getters }) {
   return res
 }
 
-export async function move ({ dispatch, getters }, params) {
-  let res = (await this.$axios.get('/game/simple/move', { params })).data
-  if (res === 'accepted') {
-    await dispatch('updateGame')
+export async function move ({ commit, dispatch, getters }, params) {
+  let data = (await this.$axios.get('/game/simple/move', { params })).data
+  if (data.status === 'success') {
+    commit('setGame', data.game)
     if (getters.gameOver) {
       await dispatch('gameOver')
     } else if (getters.isCpuMove) {
       await dispatch('cpuMove')
     }
   }
-  return res
+  return data
 }
 
-export async function cpuMove ({ dispatch, state, getters }) {
+export async function cpuMove ({ commit, dispatch, state, getters }) {
   let accepted = false
   do {
     if (state.settings.sleep) await sleep(4000)
-    let res = (await this.$axios.get('game/simple/cpumove')).data
-    if (res === 'accepted') {
+    let data = (await this.$axios.get('game/simple/cpumove')).data
+    if (data.status === 'success') {
       accepted = true
-      await dispatch('updateGame')
+      commit('setGame', data.game)
       if (getters.gameOver) {
         await dispatch('gameOver')
         break

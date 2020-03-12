@@ -97,7 +97,7 @@ class Board {
    * Collects data and gives it to the client side in the required form. Outdated
    * @returns {object} board data for a client
    */
-  async toEdgeArg({ tips }) {
+  async toClient({ tips = false }) {
     let probs;
     if ((typeof(tips) === 'boolean' && tips) || tips === "true")
       probs = await this.getProbs()
