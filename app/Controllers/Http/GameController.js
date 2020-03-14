@@ -56,11 +56,12 @@ class GameController {
     })
   }
 
-  start({ session, response }) {
+  async start({ session, request, response }) {
+    const params = request.all()
+    const game = new Game()
     try {
-      let game = new Game();
       putGame(session, game);
-      return response.send('GameIsReady');
+      return response.json(await game.toClient(params))
     }
     catch (e) { console.log(e.message); }
   }

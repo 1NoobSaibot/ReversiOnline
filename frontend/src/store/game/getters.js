@@ -1,4 +1,4 @@
-export function gameOver (state) {
+export function isOver (state) {
   return state.game.board.gameOver
 }
 

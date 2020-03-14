@@ -1,18 +1,17 @@
 <template>
   <div>
-    <div>White({{wCounter()}}) Black({{bCounter()}}) </div>
+    <div>White({{wCounter}}) Black({{bCounter}}) </div>
     <Board
       :m="value ? value.board.m : null"
       :probs="value ? value.board.probs : null"
     />
-    <GameSettings/>
   </div>
 </template>
 
 <script>
 export default {
   props: ['value'],
-  methods: {
+  computed: {
     wCounter () {
       return this.$store.getters['game/wCount']
     },
